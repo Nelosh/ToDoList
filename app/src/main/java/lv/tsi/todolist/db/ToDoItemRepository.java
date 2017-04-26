@@ -40,7 +40,7 @@ public class ToDoItemRepository {
     public ToDoItem getById(Long id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         SQLBuilder sqlBuilder = new SQLBuilder();
-        String sql = sqlBuilder.SELECT(_ID, TITLE_COLUMN, DETAILS_COLUMN, DATE_COLUMN, CHECKED_COLUMN)
+        String sql = sqlBuilder.SELECT(_ID, TITLE_COLUMN, DETAILS_COLUMN, DATE_COLUMN, CHECKED_COLUMN, IMAGE_PATH_COLUMN)
                                .FROM(TABLE_NAME)
                                .WHERE(expr(_ID,"=",id.toString()))
                                .toString();
@@ -61,11 +61,13 @@ public class ToDoItemRepository {
                                              TITLE_COLUMN,
                                              DETAILS_COLUMN,
                                              DATE_COLUMN,
-                                             CHECKED_COLUMN)
+                                             CHECKED_COLUMN,
+                                             IMAGE_PATH_COLUMN)
                                 .VALUES(item.getTitle(),
                                         item.getDetails(),
                                         item.getFormattedDate(),
-                                        item.isChecked() ? "1" : "0")
+                                        item.isChecked() ? "1" : "0",
+                                        item.getUri())
                                 .toString());
 
     }
@@ -75,7 +77,8 @@ public class ToDoItemRepository {
                                 .SET(expr(TITLE_COLUMN, "=", newValues.getTitle()),
                                      expr(DETAILS_COLUMN, "=", newValues.getDetails()),
                                      expr(DATE_COLUMN, "=", newValues.getFormattedDate()),
-                                     expr(CHECKED_COLUMN, "=", newValues.isChecked() ? "1" : "0")
+                                     expr(CHECKED_COLUMN, "=", newValues.isChecked() ? "1" : "0"),
+                                     expr(IMAGE_PATH_COLUMN, "=", newValues.getUri())
                                 )
                                 .WHERE(new SQLExpression(_ID, "=", newValues.getId().toString()))
                                 .toString());
@@ -93,7 +96,7 @@ public class ToDoItemRepository {
     public Cursor getCursorToAll() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         SQLBuilder sqlBuilder = new SQLBuilder();
-        String sql = sqlBuilder.SELECT(_ID, TITLE_COLUMN, DETAILS_COLUMN, DATE_COLUMN, CHECKED_COLUMN)
+        String sql = sqlBuilder.SELECT(_ID, TITLE_COLUMN, DETAILS_COLUMN, DATE_COLUMN, CHECKED_COLUMN, IMAGE_PATH_COLUMN)
                                .FROM(TABLE_NAME)
                                .ORDER_BY(TITLE_COLUMN)
                                .toString();
@@ -120,7 +123,8 @@ public class ToDoItemRepository {
                 cursor.getString(cursor.getColumnIndex(TITLE_COLUMN)),
                 cursor.getString(cursor.getColumnIndex(DETAILS_COLUMN)),
                 cursor.getString(cursor.getColumnIndex(DATE_COLUMN)),
-                cursor.getInt(cursor.getColumnIndex(CHECKED_COLUMN)) != 0
+                cursor.getInt(cursor.getColumnIndex(CHECKED_COLUMN)) != 0,
+                cursor.getString(cursor.getColumnIndex(IMAGE_PATH_COLUMN))
         );
     }
 

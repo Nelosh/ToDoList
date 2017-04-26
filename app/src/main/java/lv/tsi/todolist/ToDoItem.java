@@ -10,6 +10,7 @@ public class ToDoItem implements Serializable {
     private String title;
     private Date date;
     private boolean checked;
+    private String uri = "";
     private String details = "";
 
     public ToDoItem(String title, Date date, boolean checked) {
@@ -18,12 +19,13 @@ public class ToDoItem implements Serializable {
         this.checked = checked;
     }
 
-    public ToDoItem(Long id, String title, String details, String date, boolean checked) {
+    public ToDoItem(Long id, String title, String details, String date, boolean checked, String uri) {
         this.id = id;
         this.title = title;
         this.details = details;
         setFormattedDate(date);
         this.checked = checked;
+        this.uri = uri;
     }
 
     public ToDoItem(String title) {
@@ -72,6 +74,14 @@ public class ToDoItem implements Serializable {
         } catch (ParseException e) {
             this.date = new Date();
         }
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getDetails() {

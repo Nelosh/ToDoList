@@ -15,7 +15,8 @@ public class ToDoDBHelper extends SQLiteOpenHelper {
                                                   ToDoEntry.TITLE_COLUMN + " TEXT," +
                                                   ToDoEntry.DETAILS_COLUMN + " TEXT," +
                                                   ToDoEntry.DATE_COLUMN + " TEXT," +
-                                                  ToDoEntry.CHECKED_COLUMN + " INTEGER)";
+                                                  ToDoEntry.CHECKED_COLUMN + " INTEGER," +
+                                                  ToDoEntry.IMAGE_PATH_COLUMN + " TEXT)";
 
     private static final String TODO_DROP_SQL = "DROP TABLE_NAME IF EXISTS " + ToDoEntry.TABLE_NAME;
 
@@ -43,6 +44,7 @@ public class ToDoDBHelper extends SQLiteOpenHelper {
         public static final String DETAILS_COLUMN = "DETAILS";
         public static final String DATE_COLUMN = "DATE";
         public static final String CHECKED_COLUMN = "CHECKED";
+        public static final String IMAGE_PATH_COLUMN = "IMAGE_PATH";
     }
 
 }
