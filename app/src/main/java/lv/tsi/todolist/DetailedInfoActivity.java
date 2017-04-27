@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +28,7 @@ import static lv.tsi.todolist.MainActivity.DETAILED_INFO;
 
 public class DetailedInfoActivity extends AppCompatActivity{
 
+    private static final int PERMISSIONS_REQUEST_READ_PICTURE = 84;
     public int REQUEST_IMAGE = 42;
 
     ToDoItem item;
@@ -93,16 +95,26 @@ public class DetailedInfoActivity extends AppCompatActivity{
     @OnClick(R.id.img)
     public void changeImg() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            requestImage();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_READ_PICTURE);
         }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_REQUEST_READ_PICTURE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            requestImage();
+        }
+    }
+
+    private void requestImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE);
-
-
     }
 
     @Override
@@ -110,27 +122,14 @@ public class DetailedInfoActivity extends AppCompatActivity{
         if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) {
             if (data != null && data.getData() != null) {
                 Uri uri = data.getData();
-
-//                final int takeFlags = data.getFlags()
-//                                      & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                // Check for the freshest data.
-                this.grantUriPermission(this.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                this.getContentResolver().takePersistableUriPermission(uri, takeFlags);
-
                 setImage(uri);
-
                 item.setUri(uri.toString());
             }
         }
+
     }
 
     private void setImage(Uri uri) {
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_DOCUMENTS);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.MANAGE_DOCUMENTS);;
-        }
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
             imageView.setImageBitmap(bitmap);
